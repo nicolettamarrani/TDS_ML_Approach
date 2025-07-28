@@ -39,7 +39,7 @@ Model.PlotComparisonEnergies(Predicted_Energies, Actual_Energies)
 plt.close('all')
 
 # Experimental data fit
-FileName = 'filename.xlsx'
+FileName = 'Exp_Data_Novak_200.xlsx'
 Exp_Processed_Data = ExpDataProcessing.ExpDataProcessing(FileName, Material)
 Exp_Temp = Exp_Processed_Data.Temperature
 Exp_Flux = Exp_Processed_Data.Flux
