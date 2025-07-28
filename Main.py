@@ -20,7 +20,7 @@ MaxTraps = 4
 
 # Material, test and numerical parameters
 ExpName = "Novak_200"
-trap_model = "McNabb"
+trap_model = "McNabb" # McNabb or Oriani
 Material = TDS_Material.TDS_Material(ExpName, trap_model)
 
 # Model hyperparameters
@@ -31,7 +31,6 @@ Model = ModelEnsemble.ModelEnsemble(Material, Traps, MaxTraps, Concentrations, H
 
 # Verification
 TDS_Curves, Actual_Traps, Actual_Concentrations, Actual_Energies, TDS_Temp = TDS_Sim.SimDataSet(Material, NumVerification, MaxTraps, Traps, Concentrations, n_cpu_cores)
-#TDS_Curves_Noise = [Curve + np.random.normal(0,0.01*np.mean(Curve),size=Curve.shape) for Curve in TDS_Curves]
 Predicted_Traps, Predicted_Concentrations, Predicted_Energies = Model.predict(TDS_Curves)
 
 Model.PlotComparisonTraps(Predicted_Traps, Actual_Traps, TDS_Curves, TDS_Temp)
