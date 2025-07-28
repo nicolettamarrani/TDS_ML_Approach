@@ -176,7 +176,10 @@ class RegressionModel:
         for i in range(0,self.NumTraining):
             sol = []
             for j in range(0,self.NumTraps):
-                sol.append(energy_trapping_sites[i][j][1])
+                if (self.Material.TrapModel == TDS_Material.TRAPMODELS.MCNABB):
+                    sol.append(energy_trapping_sites[i][j][1])
+                elif (self.Material.TrapModel == TDS_Material.TRAPMODELS.ORIANI):
+                    sol.append(energy_trapping_sites[i][j])
 
             if (isinstance(self.Concentrations, str)):
                 for j in range(0,self.NumTraps):

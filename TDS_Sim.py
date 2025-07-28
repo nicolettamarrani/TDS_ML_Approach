@@ -658,7 +658,10 @@ def GenerateDataPoint(i             :int,
     E_traps = []
     for t in traps:
         N_traps.append(t[2])
-        E_traps.append([t[0], t[1]])
+        if (Material.TrapModel == TDS_Material.TRAPMODELS.MCNABB):
+            E_traps.append([t[0], t[1]])
+        elif (Material.TrapModel == TDS_Material.TRAPMODELS.ORIANI):
+            E_traps.append(t[1]-t[0])
 
     
     print()
