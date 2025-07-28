@@ -47,5 +47,11 @@ Exp_Flux = Exp_Processed_Data.Flux
 Exp_TDS_Curve = Exp_Processed_Data.TDS_Curve
 
 Exp_Predicted_Traps, Exp_Predicted_Concentrations, Exp_Predicted_Energies = Model.predict(Exp_TDS_Curve)
-print(Exp_Predicted_Traps, Exp_Predicted_Concentrations, Exp_Predicted_Energies)
+
+# Print predictions
+print(f"Number of traps: {Exp_Predicted_Traps[0]}")
+for i in range(Exp_Predicted_Traps[0]):
+    print(f"Trap {i+1}: {Exp_Predicted_Energies[0][i]} J/mol, {Exp_Predicted_Concentrations[0][i]} mol/m^3")
+
+# Plot predictions
 Model.PlotComparisonExpData(Exp_Temp, Exp_Flux, Exp_Predicted_Concentrations, Exp_Predicted_Energies)
