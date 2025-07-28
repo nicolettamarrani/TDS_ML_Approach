@@ -38,8 +38,8 @@ class Model_Parameters:
                 self.wd_reg = 1e-3
 
                 # Classification model
-                self.num_layers_class = 5
-                self.nodes_class = [64, 64, 32, 16, 8]
+                self.num_layers_class = 4
+                self.nodes_class = [256, 128, 64, 32]
 
                 self.lr_class = 1e-3
                 self.wd_class = 1e-3

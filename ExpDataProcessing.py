@@ -13,6 +13,8 @@ import Model_Parameters
 class ExpDataProcessing:
 
     M:TDS_Material.TDS_Material = None
+
+    hp:Model_Parameters.Model_Parameters = None
     
     FileName = None
     
