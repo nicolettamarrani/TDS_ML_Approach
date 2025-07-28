@@ -49,9 +49,13 @@ Exp_TDS_Curve = Exp_Processed_Data.TDS_Curve
 Exp_Predicted_Traps, Exp_Predicted_Concentrations, Exp_Predicted_Energies = Model.predict(Exp_TDS_Curve)
 
 # Print predictions
+if trap_model == "McNabb":
+    Energy_Label = "De-trapping energy"
+elif trap_model == "Oriani":
+    Energy_Label = "Binding energy"
 print(f"Number of traps: {Exp_Predicted_Traps[0]}")
 for i in range(Exp_Predicted_Traps[0]):
-    print(f"Trap {i+1}: {Exp_Predicted_Energies[0][i]} J/mol, {Exp_Predicted_Concentrations[0][i]} mol/m^3")
+    print(f"Trap {i+1}: {Energy_Label} = {Exp_Predicted_Energies[0][i]:.2f} J/mol, Trap density = {Exp_Predicted_Concentrations[0][i]:.2f} mol/m^3")
 
 # Plot predictions
 Model.PlotComparisonExpData(Exp_Temp, Exp_Flux, Exp_Predicted_Concentrations, Exp_Predicted_Energies)

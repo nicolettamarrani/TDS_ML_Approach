@@ -190,7 +190,7 @@ class TDS_Sample:
         CT = np.zeros(len(self.N_traps))
         for i in range(0,len(self.N_traps)):
             if (self.M.TrapModel==TDS_Material.TRAPMODELS.ORIANI):
-                E = self.E_traps[i] 
+                E = self.E_traps[i][1] 
                 NT = self.N_traps[i]
                 eTerm = math.exp(E/self.M.R/self.T)
                 CT[i] = NT * eTerm * CL/self.M.NL/(1.0+(eTerm-1.0)*CL/self.M.NL)
@@ -412,8 +412,8 @@ class TDS_Sample:
                 #traps
                 if (self.M.TrapModel == TDS_Material.TRAPMODELS.ORIANI):
                     for E,Nt in zip(self.E_traps, self.N_traps):
-                        eTerm = math.exp(E/self.M.R/self.T)
-                        deTerm_dt = -E/self.M.R/self.T**2*eTerm*HeatRate
+                        eTerm = math.exp(E[1]/self.M.R/self.T)
+                        deTerm_dt = -E[1]/self.M.R/self.T**2*eTerm*HeatRate
                         theta_L = C[n]/self.M.NL
                         theta_L = min(1.0,max(0.0,theta_L))
                         
@@ -658,12 +658,8 @@ def GenerateDataPoint(i             :int,
     E_traps = []
     for t in traps:
         N_traps.append(t[2])
-        if (Material.TrapModel == TDS_Material.TRAPMODELS.MCNABB):
-            E_traps.append([t[0], t[1]])
-        elif (Material.TrapModel == TDS_Material.TRAPMODELS.ORIANI):
-            E_traps.append(t[1]-t[0])
+        E_traps.append([t[0], t[1]])
 
-    
     print()
     print(str(i)+":"+"\n\t N="+str(N_traps)+"\n\t E="+str(E_traps))
 

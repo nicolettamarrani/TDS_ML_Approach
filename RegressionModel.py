@@ -99,8 +99,6 @@ class RegressionModel:
         self.OutputScalerEnergyName = dir_model + self.SettingsName+"_E"+".OutScale"
         self.OutputScalerConcentrationName = dir_model +self.SettingsName+"_N"+".OutScale"
 
-        print(self.DataName)
-
         if ((os.path.isfile(self.DataName) == False) or (Regenerate_Data)):
             #Data needs to be generated
             self.GenerateData()
@@ -179,7 +177,7 @@ class RegressionModel:
                 if (self.Material.TrapModel == TDS_Material.TRAPMODELS.MCNABB):
                     sol.append(energy_trapping_sites[i][j][1])
                 elif (self.Material.TrapModel == TDS_Material.TRAPMODELS.ORIANI):
-                    sol.append(energy_trapping_sites[i][j])
+                    sol.append(energy_trapping_sites[i][j][1] - energy_trapping_sites[i][j][0])
 
             if (isinstance(self.Concentrations, str)):
                 for j in range(0,self.NumTraps):
