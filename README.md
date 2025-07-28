@@ -18,5 +18,5 @@ Other relevant files:
 - **ExpDataProcessing.py**: Handles experimental data processing (i.e., loading, smoothing and downsampling)
 
 Current setup:
-All inputs and files required to analyse the experimental data from Novak et al. for a high-strength AISI 4340 tempered martensitic steel (test case 1 of the manuscript) are included, allowing the results from Figs. 10-11 to be reproduced.
+All inputs and files required to analyse the experimental data from Novak et al. for a high-strength AISI 4340 tempered martensitic steel (test case 1 of the manuscript) are included, allowing the results from Fig. 11 to be reproduced.
 Model hyperparameters are defined as specified in the manuscript.
