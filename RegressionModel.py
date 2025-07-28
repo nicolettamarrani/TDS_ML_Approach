@@ -93,11 +93,13 @@ class RegressionModel:
         dir_data = f"DataFiles/{Material.ExpName}/"
         dir_model = f"TrainedModels/{Material.ExpName}/"
 
-        self.SettingsName =  f"{self.Material.ExpName}_{int(self.Material.dEMin)}EdMin_{self.Material.ntp}ntp_{self.NumTraps}_{self.Concentrations}_{self.Material.NRange[0]}Nmin_{self.Material.NRange[1]}Nmax_{self.NumTraining}"
+        self.SettingsName =  f"{self.Material.ExpName}_{int(self.Material.dEMin/1000)}dEMin_{self.Material.ntp}ntp_{self.NumTraps}_{self.Concentrations}_{self.Material.NRange[0]}Nmin_{int(self.Material.NRange[1])}Nmax_{self.NumTraining}"
         self.DataName = dir_data + self.SettingsName + ".hdf5"
         self.TrainedModelName = dir_model + self.SettingsName+".keras"
         self.OutputScalerEnergyName = dir_model + self.SettingsName+"_E"+".OutScale"
         self.OutputScalerConcentrationName = dir_model +self.SettingsName+"_N"+".OutScale"
+
+        print(self.DataName)
 
         if ((os.path.isfile(self.DataName) == False) or (Regenerate_Data)):
             #Data needs to be generated
@@ -158,7 +160,7 @@ class RegressionModel:
             energy_trapping_sites = hf['energy_trapping_sites'][:]
         
         # Data pre-processing
-        tds_curves = np.where(tds_curves < self.hp.flux_thershold, self.hp.flux_thershold, tds_curves)
+        tds_curves = np.where(tds_curves < self.hp.flux_threshold, self.hp.flux_threshold, tds_curves)
         if self.hp.log_transformation:
             tds_curves = np.log10(tds_curves)
 
@@ -261,7 +263,7 @@ class RegressionModel:
             - c (np.ndarray): Trapping site concentrations
         """
         # Data pre-processing
-        TDS_Curve = np.where(TDS_Curve < self.hp.flux_thershold, self.hp.flux_thershold, TDS_Curve)
+        TDS_Curve = np.where(TDS_Curve < self.hp.flux_threshold, self.hp.flux_threshold, TDS_Curve)
         if self.hp.log_transformation:
             TDS_Curve = np.log10(TDS_Curve)
 

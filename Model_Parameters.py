@@ -2,7 +2,7 @@ class Model_Parameters:
     """Defines model hyper-parameters"""
 
     # Pre-processing parameters
-    flux_thershold:float = 1e-12
+    flux_threshold:float = 1e-12
     """Clips all flux values to 1e-12. Added for stability"""
 
     log_transformation:bool = True

@@ -103,16 +103,16 @@ class ModelEnsemble:
 
         return Predicted_Traps, Predicted_Concentrations, Predicted_Energies
     
-    def PlotComparisonExpData(self, Temperature, TDS_Curve, Predicted_Energies, Predicted_Concentrations):
+    def PlotComparisonExpData(self, Temperature, TDS_Curve, Predicted_Concentrations, Predicted_Energies):
         
-        fig1, ax1 = plt.subplots(figsize=(4, 3))
+        fig1, ax1 = plt.subplots()
         ax1.set_xlabel(r"$\text{Temperature} \;[\text{K}]$", fontsize=10)
         ax1.set_ylabel(r"$\text{Hydrogen Flux} \;[\text{mol}/\text{m}^2/\text{s}]$", fontsize=10)
 
-        ax1.scatter(Temperature, TDS_Curve, label="Experimental Data", color="blue", s=10)
+        ax1.scatter(Temperature, TDS_Curve, label="Experimental Data", color="black", s=10)
         ax1.legend(loc='upper right', fontsize=8)
 
-        fig2, ax2 = plt.subplots(figsize=(4, 3))
+        fig2, ax2 = plt.subplots()
         ax2.set_xlabel(r"$\text{Temperature} \;[\text{K}]$", fontsize=10)
         ax2.set_ylabel(r"$\text{Hydrogen Flux} \;[\text{mol}/\text{m}^2/\text{s}]$", fontsize=10)
 
@@ -128,7 +128,7 @@ class ModelEnsemble:
             Sample.Rest()
             T, J = Sample.TDS()
 
-            ax2.plot(T, J)
+            ax2.plot(T, J, label=f"Trap {trap_num}")
 
         N = N_traps
         E = []
@@ -140,7 +140,7 @@ class ModelEnsemble:
         Sample.Rest()                             
         [T,J] = Sample.TDS() 
 
-        ax1.plot(T, J,'--',label=f"TDS Simulation Prediction")
+        ax1.plot(T, J,'--',color="blue",label=f"TDS Simulation Prediction")
         ax1.legend(loc='upper right', fontsize=8)
 
         ax2.plot(T, J, '--', label=f"TDS Simulation Prediction")
@@ -202,7 +202,7 @@ class ModelEnsemble:
     def PlotComparison(self, predicted, actual, scale, axis_prefix, axis_suffix):
         fg = plt.figure(figsize=[18,10])
 
-        ax = [None] * 7
+        ax = [None] * 5
         ax[0] = fg.add_subplot(3,3,1)
         ax[0].set_xlabel(r'$'+axis_prefix+r'_{real}'+axis_suffix+r'$')
         ax[0].set_ylabel(r'$'+axis_prefix+r'_{pred}'+axis_suffix+r'$')
@@ -229,17 +229,6 @@ class ModelEnsemble:
         ax[4].set_ylabel(r'$'+axis_prefix+r'_{4}'+axis_suffix+r'$')
         ax[4].set_title(r'Four Traps (2/2)')
 
-        ax[5] = fg.add_subplot(3,3,7, projection='3d')
-        ax[5].set_xlabel(r'$'+axis_prefix+r'_{1}'+axis_suffix+r'$')
-        ax[5].set_ylabel(r'$'+axis_prefix+r'_{2}'+axis_suffix+r'$')
-        ax[5].set_ylabel(r'$'+axis_prefix+r'_{3}'+axis_suffix+r'$')
-        ax[5].set_title(r'Five Traps (1/2)')
-
-        ax[6] = fg.add_subplot(3,3,8)
-        ax[6].set_xlabel(r'$'+axis_prefix+r'_{4}'+axis_suffix+r'$')
-        ax[6].set_ylabel(r'$'+axis_prefix+r'_{5}'+axis_suffix+r'$')
-        ax[6].set_title(r'Five Traps (2/2)')
-
         for i in range(0,len(actual)):
             ntraps_pred   = len(predicted[i])
             ntraps_actual = len(actual[i])
@@ -264,14 +253,6 @@ class ModelEnsemble:
                         ax[4].plot(actual[i][2]*scale, actual[i][3]*scale,'ro')
                         ax[4].plot(predicted[i][2]*scale, predicted[i][3]*scale,'b*')
                         ax[4].plot([actual[i][2]*scale, predicted[i][2]*scale],[actual[i][3]*scale, predicted[i][3]*scale],'k')
-                    case 5:
-                        ax[5].plot(actual[i][0]*scale, actual[i][1]*scale, actual[i][2]*scale,'ro')
-                        ax[5].plot(predicted[i][0]*scale, predicted[i][1]*scale, predicted[i][2]*scale,'b*')
-                        ax[5].plot([actual[i][0]*scale, predicted[i][0]*scale],[actual[i][1]*scale, predicted[i][1]*scale],[actual[i][2]*scale, predicted[i][2]*scale],'k')
-
-                        ax[6].plot(actual[i][3]*scale, actual[i][4]*scale,'ro')
-                        ax[6].plot(predicted[i][3]*scale, predicted[i][4]*scale,'b*')
-                        ax[6].plot([actual[i][3]*scale, predicted[i][3]*scale],[actual[i][4]*scale, predicted[i][4]*scale],'k')
 
         plt.tight_layout()
         if (isinstance(self.Traps, str)):

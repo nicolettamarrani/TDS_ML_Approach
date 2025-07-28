@@ -5,6 +5,7 @@ import Model_Parameters
 import ExpDataProcessing
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Training parameters
 NumTraining = 50000
@@ -30,6 +31,7 @@ Model = ModelEnsemble.ModelEnsemble(Material, Traps, MaxTraps, Concentrations, H
 
 # Verification
 TDS_Curves, Actual_Traps, Actual_Concentrations, Actual_Energies, TDS_Temp = TDS_Sim.SimDataSet(Material, NumVerification, MaxTraps, Traps, Concentrations, n_cpu_cores)
+#TDS_Curves_Noise = [Curve + np.random.normal(0,0.01*np.mean(Curve),size=Curve.shape) for Curve in TDS_Curves]
 Predicted_Traps, Predicted_Concentrations, Predicted_Energies = Model.predict(TDS_Curves)
 
 Model.PlotComparisonTraps(Predicted_Traps, Actual_Traps, TDS_Curves, TDS_Temp)
@@ -39,11 +41,12 @@ Model.PlotComparisonEnergies(Predicted_Energies, Actual_Energies)
 plt.close('all')
 
 # Experimental data fit
-FileName = 'Exp_Data_Novak_200.xlsx'
-Exp_Processed_Data = ExpDataProcessing.ExpDataProcessing(FileName, Material)
+FileName = 'TDSData/Novak_200_Experimental.xlsx'
+Exp_Processed_Data = ExpDataProcessing.ExpDataProcessing(FileName, Material, HyperParameters)
 Exp_Temp = Exp_Processed_Data.Temperature
 Exp_Flux = Exp_Processed_Data.Flux
 Exp_TDS_Curve = Exp_Processed_Data.TDS_Curve
 
 Exp_Predicted_Traps, Exp_Predicted_Concentrations, Exp_Predicted_Energies = Model.predict(Exp_TDS_Curve)
+print(Exp_Predicted_Traps, Exp_Predicted_Concentrations, Exp_Predicted_Energies)
 Model.PlotComparisonExpData(Exp_Temp, Exp_Flux, Exp_Predicted_Concentrations, Exp_Predicted_Energies)

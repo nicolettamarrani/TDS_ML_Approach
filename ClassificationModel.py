@@ -71,7 +71,7 @@ class ClassificationModel:
         dir_model = f"TrainedModels/{self.Material.ExpName}"
 
         # Check if model is pre-trained and load-able, otherwise train it
-        self.SettingsName = f"{self.Material.ExpName}_{int(self.Material.dEMin)}EdMin_{self.Material.ntp}ntp_{self.MaxTraps}_{self.Concentrations}_{self.Material.NRange[0]}Nmin_{self.Material.NRange[1]}Nmax_{self.NumTraining}"
+        self.SettingsName = f"{self.Material.ExpName}_{int(self.Material.dEMin/1000)}dEMin_{self.Material.ntp}ntp_{self.MaxTraps}_{self.Concentrations}_{self.Material.NRange[0]}Nmin_{int(self.Material.NRange[1])}Nmax_{self.NumTraining}"
         self.TrainedModelName = f"{dir_model}/Classification_"+self.SettingsName+".keras"
 
         if ((os.path.isfile(self.TrainedModelName) == False) or (Regenerate_Training)):
@@ -124,7 +124,7 @@ class ClassificationModel:
         Labels = label_binarize(All_Traps, classes=range(1,self.MaxTraps+1))
 
         # Data pre-processing
-        All_TDS = np.where(All_TDS < self.hp.flux_thershold, self.hp.flux_thershold, All_TDS)
+        All_TDS = np.where(All_TDS < self.hp.flux_threshold, self.hp.flux_threshold, All_TDS)
         if self.hp.log_transformation:
             All_TDS = np.log10(All_TDS)
 
@@ -187,7 +187,7 @@ class ClassificationModel:
         """
 
         # Data pre-processing
-        TDS_Curve = np.where(TDS_Curve < self.hp.flux_thershold, self.hp.flux_thershold, TDS_Curve)
+        TDS_Curve = np.where(TDS_Curve < self.hp.flux_threshold, self.hp.flux_threshold, TDS_Curve)
         if self.hp.log_transformation:
             TDS_Curve = np.log10(TDS_Curve)
 
