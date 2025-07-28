@@ -7,8 +7,8 @@ import ExpDataProcessing
 import matplotlib.pyplot as plt
 
 # Training parameters
-NumTraining = 10
-NumVerification = 50
+NumTraining = 50000
+NumVerification = 500
 Regenerate_Data = False
 Regenerate_Training = False
 n_cpu_cores = 16
@@ -18,7 +18,7 @@ Concentrations = "Random"
 MaxTraps = 4
 
 # Material, test and numerical parameters
-ExpName = "Novak_Test"
+ExpName = "Novak_200"
 trap_model = "McNabb"
 Material = TDS_Material.TDS_Material(ExpName, trap_model)
 

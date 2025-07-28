@@ -12,9 +12,9 @@ class Model_Parameters:
     noise_std_dev:float = 0.05
 
     # Training parameters
-    epoch_coeff_reg:int = 20
+    epoch_coeff_reg:int = 200
 
-    epoch_coeff_class:int = 10
+    epoch_coeff_class:int = 100
 
     batch_size:int = 32
 
