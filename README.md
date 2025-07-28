@@ -12,7 +12,7 @@ Other relevant files:
 - **Model_Parameters.py**: Defines model hyperparameters and training parameters
 - **TDS_Sim.py**: Numerical TDS simulation
 - **Classificationmodel.py**: Neural network to determine the number of trapping sites in the material
-- **RegressionModel.py**: Neural network that, for a given number of trapping sites, determines the binding energy and density of those sites
+- **RegressionModel.py**: Neural network that, for a given number of trapping sites, determines the energies and density of those sites. Binding energies are reported if Oriani is selected, whereas de-trapping energies are reported if McNabb-Foster is selected
 - **ModelEnsemble.py**: Combines both of the above neural networks into a single model, first predicting the number of traps and then their density/energies
 - **ExpDataParameters.py**: Stores material parameters, TDS test conditions and numerical simulation settings for experimental datasets
 - **ExpDataProcessing.py**: Handles experimental data processing (i.e., loading, smoothing and downsampling)
