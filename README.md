@@ -20,3 +20,5 @@ Other relevant files:
 Current setup:
 All inputs and files required to analyse the experimental data from Novak et al. for a high-strength AISI 4340 tempered martensitic steel (test case 1 of the manuscript) are included, allowing the results from Fig. 11 to be reproduced.
 Model hyperparameters are defined as specified in the manuscript.
+
+Full documentation is available [here](Documentation/TDS_ML_Code_Doc.pdf). 
