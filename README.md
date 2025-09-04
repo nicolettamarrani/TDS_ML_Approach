@@ -1,5 +1,5 @@
 # TDS_ML_Approach
-If this code is used, please cite Marrani, N., Hageman, T., Martínez-Pañeda, E., 2025. A neural network machine-learning approach for characterising hydrogen trapping parameters from TDS experiments. International Journal of Hydrogen Energy 167, 150874. Available at: [10.1016/j.ijhydene.2025.150874](https://doi.org/10.1016/j.ijhydene.2025.150874).
+If this code is used, please cite Marrani, N., Hageman, T., Martínez-Pañeda, E., 2025. A neural network machine-learning approach for characterising hydrogen trapping parameters from TDS experiments. International Journal of Hydrogen Energy 167, 150874 [10.1016/j.ijhydene.2025.150874](https://doi.org/10.1016/j.ijhydene.2025.150874).
 
 This repository provides a machine learning-based framework for parameter identification from thermal desorption spectroscopy (TDS) spectra. A multi-Neural Network (NN) model is developed and trained exclusively on synthetic
 data to predict trapping parameters directly from experimental data. The model comprises two multi-layer, fully connected, feed-forward NNs trained with backpropagation.
