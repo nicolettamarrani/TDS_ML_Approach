@@ -15,10 +15,12 @@ Traps = "Random"
 Concentrations = "Random"
 MaxTraps = 4
 
+HD_Trap_params = None
+
 # Material, test and numerical parameters
 ExpName = "Novak_200"
 trap_model = "McNabb"
-Material = TDS_Material.TDS_Material(ExpName, trap_model)
+Material = TDS_Material.TDS_Material(ExpName, HD_Trap_param=HD_Trap_params, trap_model=trap_model)
 
 # Model hyperparameters
 HyperParameters = Model_Parameters.Model_Parameters(ParameterSet="optimised")
