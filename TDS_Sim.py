@@ -633,26 +633,63 @@ def GenerateDataPoint(i             :int,
     
     traps = []
 
-    for t in range(0,NumTraps):
-        validPoint = False
-        while validPoint == False:
-            E_abs = Material.E_Diff #set equal to lattice activation energy
-            E_des = random.uniform(Material.ERange[0], Material.ERange[1])
+    if Material.High_Density_Trap:
+        # Define parameters for high density trap
 
-            if (isinstance(Concentration, str)):
-                N = random.uniform(Material.NRange[0], Material.NRange[1])
-            else:
-                N = Concentration
-    
-            goodDist = True
-            for E in traps:
-                if abs(E[1]-E_des)<Material.dEMin:
-                    goodDist = False
+        E1_abs = Material.E_Diff #set equal to lattice activation energy
+        E1_b = random.uniform(Material.HDT_ERange[0], Material.HDT_ERange[1])
+        E1_des = E1_b + E1_abs
 
-            validPoint = goodDist
+        if (isinstance(Concentration, str)):
+            N1 = random.uniform(Material.HDT_NRange[0], Material.HDT_NRange[1])
+        else:
+            N1 = Concentration
 
-        traps.append([E_abs, E_des, N])
-        traps.sort(key=takeSecond)
+        traps.append([E1_abs, E1_des, N1])
+
+        for t in range(0,NumTraps-1):
+            validPoint = False
+            while validPoint == False:
+                E_abs = Material.E_Diff #set equal to lattice activation energy
+                E_b = random.uniform(Material.ERange[0], Material.ERange[1])
+                E_des = E_b + E_abs
+
+                if (isinstance(Concentration, str)):
+                    N = random.uniform(Material.NRange[0], Material.NRange[1])
+                else:
+                    N = Concentration
+        
+                goodDist = True
+                for E in traps:
+                    if abs(E[1]-E_des)<Material.dEMin:
+                        goodDist = False
+
+                validPoint = goodDist
+
+            traps.append([E_abs, E_des, N])
+            traps.sort(key=takeSecond)
+    else:
+        for t in range(0,NumTraps):
+            validPoint = False
+            while validPoint == False:
+                E_abs = Material.E_Diff #set equal to lattice activation energy
+                E_b = random.uniform(Material.ERange[0], Material.ERange[1])
+                E_des = E_b + E_abs
+
+                if (isinstance(Concentration, str)):
+                    N = random.uniform(Material.NRange[0], Material.NRange[1])
+                else:
+                    N = Concentration
+        
+                goodDist = True
+                for E in traps:
+                    if abs(E[1]-E_des)<Material.dEMin:
+                        goodDist = False
+
+                validPoint = goodDist
+
+            traps.append([E_abs, E_des, N])
+            traps.sort(key=takeSecond)
         
     N_traps = []
     E_traps = []

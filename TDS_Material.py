@@ -1,7 +1,6 @@
 import math as math
 from enum import Enum
-
-import ExpDataParameters
+from ExpDataParameters import ExpDataParameters
 
 TRAPMODELS = Enum('TRAPMODELS','MCNABB ORIANI MCNABB2')
 """Indicates which trapping model is to be used, either MCNABB or ORIANI"""
@@ -98,20 +97,64 @@ class TDS_Material:
     dEMin:float = 10e3
     """minimum difference in energy of traps [J]"""
 
-    def __init__(self, ExpName:str, trap_model:str):
-        """Initializes the material properties based on the provided material and tds setup names (allowing for easy switching between investigating different setups/materials)
+    High_Density_Trap = False
+    """If True modifies data generation and model training procedures to account for a high-density low-energy trap"""
+
+    HDT_NRange = None
+    """Density range of high-density low-energy trap"""
+
+    HDT_ERange = None
+    """De-trapping energy range of high-density low-energy trap"""
+
+    def __init__(self, ExpName:str, material_param:dict=None, test_param:dict=None, numerical_param:dict=None, HD_Trap_param:dict=None, trap_model:str='McNabb'):
+        """Initializes the parameters based on the provided reference experiment name (allowing for easy switching between investigating different experimental datasets)
 
         Args:
             ExpName (str): reference for experimental data
+            material_param (dict, optional): Material parameters. If None, will try to load from ExpDataParameters
+            test_param (dict, optional): Test parameters. If None, will try to load from ExpDataParameters  
+            numerical_param (dict, optional): Numerical parameters. If None, will try to load from ExpDataParameters
+            HDT (tuple): Indicates presence of high-density low-energy trap. If True, trap exists and density/energy range needs to be specified
             trap_model (str): indicates which trapping model is used, either MCNABB or ORIANI
         """
         self.ExpName = ExpName
 
-        # Extract test case specific parameters
-        ExpParameters = ExpDataParameters.ExpDataParameters(ExpName)
-        material_param = ExpParameters.material
-        test_param = ExpParameters.test
-        numerical_param = ExpParameters.numerical
+        # Try to get parameters from ExpDataParameters if not provided
+        if material_param is None or test_param is None or numerical_param is None or HD_Trap_param is None:
+            # First check if experiment is already registered
+            exp_material, exp_test, exp_numerical, exp_HD_Trap = ExpDataParameters.get_experiment(ExpName)
+            
+            if exp_material is None:
+                # If not registered, try to create ExpDataParameters object (this will work for predefined experiments)
+                try:
+                    exp_params = ExpDataParameters(ExpName)
+                    exp_material = exp_params.material
+                    exp_test = exp_params.test
+                    exp_numerical = exp_params.numerical
+                    exp_HD_Trap = exp_params.HD_Trap
+                except:
+                    # If that fails and no parameters provided, raise error
+                    if material_param is None or test_param is None or numerical_param is None or exp_HD_Trap is None:
+                        raise ValueError(f"Experiment '{ExpName}' not found in predefined experiments and insufficient parameters provided")
+            
+            # Use loaded parameters as defaults, override if parameters provided by user
+            material_param = material_param if material_param is not None else exp_material
+            test_param = test_param if test_param is not None else exp_test
+            numerical_param = numerical_param if numerical_param is not None else exp_numerical
+            HD_Trap_param = HD_Trap_param if HD_Trap_param is not None else exp_HD_Trap
+
+        # Register the experiment with ExpDataParameters
+        ExpDataParameters.register_experiment(ExpName, material_param, test_param, numerical_param, HD_Trap_param)
+
+        # High-density, low-energy trap parameters
+        if HD_Trap_param:
+            self.High_Density_Trap = HD_Trap_param['HDT']
+            self.HDT_NRange = HD_Trap_param['HDT_NRange']
+            self.HDT_ERange = HD_Trap_param['HDT_ERange']
+        else:
+            self.High_Density_Trap = False
+            self.HDT_NRange = None
+            self.HDT_ERange = None
 
         # Material properties
         self.NL = material_param['NL']

@@ -180,8 +180,15 @@ class RegressionModel:
                     sol.append(energy_trapping_sites[i][j][1] - energy_trapping_sites[i][j][0])
 
             if (isinstance(self.Concentrations, str)):
-                for j in range(0,self.NumTraps):
-                    sol.append(concentration_trapping_sites[i][j])
+                if self.Material.High_Density_Trap:
+                    for j in range(0,self.NumTraps):
+                        if j == 0:
+                            sol.append(np.log10(concentration_trapping_sites[i][j]))
+                        else:
+                            sol.append(concentration_trapping_sites[i][j])
+                else:
+                    for j in range(0,self.NumTraps):
+                        sol.append(concentration_trapping_sites[i][j])
             SolutionVector.append(sol)
         SolutionVector = np.array(SolutionVector)
         
@@ -281,6 +288,10 @@ class RegressionModel:
 
         energies = predictions_energies[0]
         concentrations = predictions_concentrations[0]
+        if self.Material.High_Density_Trap:
+            concentrations[0] = 10**concentrations[0]
+        else:
+            pass
         
         return energies,concentrations
 

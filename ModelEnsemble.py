@@ -6,6 +6,7 @@ import TDS_Sim
 
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 class ModelEnsemble:
     """Combined classification and regression models, used to determine the number of trapping sites, and for this number, return concentrations and energies"""
@@ -47,6 +48,14 @@ class ModelEnsemble:
             n_cpu_cores (int): Number of cpu cores to use for training
             HyperParameters (Model_Parameters.Model_Parameters): model training parameters
         """
+
+        # Check directories and create missing ones
+        directories_to_check = ['Figures', 'DataFiles', 'TrainedModels']
+        material_exp_name = Material.ExpName  # Assume this is defined somewhere
+
+        for dir_name in directories_to_check:
+            directory_path = os.path.join(dir_name, material_exp_name)
+            os.makedirs(directory_path, exist_ok=True)
 
         self.Material = Material
         self.MaxTraps = MaxTraps
@@ -119,21 +128,34 @@ class ModelEnsemble:
         N_traps = [lst.tolist() for array in Predicted_Concentrations for lst in array]
         E_traps = [lst.tolist() for array in Predicted_Energies for lst in array]
 
+
+
         for i in range(0,len(N_traps)):
-            trap_num = i + 1
-            N = [N_traps[i]]
-            E = [[self.Material.E_Diff, E_traps[i]]]
-            Sample = TDS_Sim.TDS_Sample(self.Material, N, E, False)
-            Sample.Charge()
-            Sample.Rest()
-            T, J = Sample.TDS()
+            if N_traps[i] > 0 and E_traps[i] > 0:
+                trap_num = i + 1
+                N = [N_traps[i]]
+                if (self.Material.TrapModel == TDS_Material.TRAPMODELS.MCNABB):
+                    E = [[self.Material.E_Diff, E_traps[i]]]
+                elif (self.Material.TrapModel == TDS_Material.TRAPMODELS.ORIANI):
+                    E = [[self.Material.E_Diff, E_traps[i]+self.Material.E_Diff]]
+                Sample = TDS_Sim.TDS_Sample(self.Material, N, E, False)
+                Sample.Charge()
+                Sample.Rest()
+                T, J = Sample.TDS()
 
-            ax2.plot(T, J, label=f"Trap {trap_num}")
+                ax2.plot(T, J, label=f"Trap {trap_num}")
+            else:
+                pass
 
-        N = N_traps
+        N = []
         E = []
         for i in range(len(E_traps)):
-            E.append([self.Material.E_Diff,E_traps[i]])
+            if N_traps[i] > 0 and E_traps[i] > 0:
+                N.append(N_traps[i])
+                if (self.Material.TrapModel == TDS_Material.TRAPMODELS.MCNABB):
+                    E.append([self.Material.E_Diff, E_traps[i]])
+                elif (self.Material.TrapModel == TDS_Material.TRAPMODELS.ORIANI):
+                    E.append([self.Material.E_Diff, E_traps[i]+self.Material.E_Diff])
 
         Sample = TDS_Sim.TDS_Sample(self.Material, N, E, False)
         Sample.Charge()    
