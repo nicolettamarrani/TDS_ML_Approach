@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Training parameters
-NumTraining = 50000
-NumVerification = 500
+NumTraining = 20
+NumVerification = 10
 Regenerate_Data = False
 Regenerate_Training = False
 n_cpu_cores = 16
@@ -18,10 +18,12 @@ Traps = "Random"
 Concentrations = "Random"
 MaxTraps = 4
 
+HD_Trap_params = None
+
 # Material, test and numerical parameters
 ExpName = "Novak_200"
 trap_model = "McNabb" # McNabb or Oriani
-Material = TDS_Material.TDS_Material(ExpName, trap_model)
+Material = TDS_Material.TDS_Material(ExpName, HD_Trap_param=HD_Trap_params, trap_model=trap_model)
 
 # Model hyperparameters
 HyperParameters = Model_Parameters.Model_Parameters(ParameterSet="optimised")

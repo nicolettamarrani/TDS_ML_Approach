@@ -2,78 +2,125 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 from scipy import signal
-import os
 from scipy.interpolate import interp1d
-import matplotlib.pyplot as plt
-
-import TDS_Material
-import Model_Parameters
+import os
 
 
 class ExpDataProcessing:
+    """Process experimental TDS data from file"""
 
-    M:TDS_Material.TDS_Material = None
-
-    hp:Model_Parameters.Model_Parameters = None
-    
-    FileName = None
-    
-    def __init__(self, FileName, Material, HyperParameters):
+    def __init__(self, file_name, material, hyperparameters):
+        self.file_name = file_name
+        self.material = material
+        self.hp = hyperparameters
         
-        self.hp = HyperParameters
-
-        self.filename = FileName
-
-        self.M = Material
+        # Initialize data attributes
+        self.temperature_raw = None
+        self.desorption_rate_raw = None
+        self.Temperature = None
+        self.Flux = None
+        self.TDS_Curve = None
         
-        self.load_and_process_data()
-        self.smooth_and_downsample_data()
-        
+        # Process the data
+        self._load_data()
+        self._process_data()
 
-    def load_and_process_data(self):
-        """Load experimental data from a file."""
-        
-        folder_path = os.path.dirname(self.filename)
-        file_name = os.path.basename(self.filename)
-        
-        file_path = os.path.join(folder_path, file_name)
-        data = pd.read_excel(file_path, header = 0)
-
+    def _load_data(self):
+        """Load experimental data from Excel file"""
+        data = pd.read_excel(self.file_name, header=0)
         self.temperature_raw = data.iloc[:, 0].to_numpy()
         self.desorption_rate_raw = data.iloc[:, 1].to_numpy()
+
+    def _process_data(self):
+        """Apply corrections, smooth, and downsample the data"""
+        # Apply material-specific corrections
+        corrected_rate = self._apply_material_corrections()
         
-    def smooth_and_downsample_data(self):
-        """Smooth and downsample data based on desired number of data points (ntp)."""
+        # Smooth the data
+        smoothed_rate = self._smooth_data(corrected_rate)
+        
+        # Downsample to model grid
+        self._downsample_data(smoothed_rate)
+        
+        # Create TensorFlow tensor
+        self.TDS_Curve = [tf.convert_to_tensor(self.Flux)]
 
-        coef = self.M.mass_density/1.01
-        desorption_rate = self.desorption_rate_raw*coef*self.M.Thickness/2
+    def _apply_material_corrections(self):
+        """Apply density and thickness corrections to desorption rate"""
+        coef = self.material.mass_density / 1.01
+        return self.desorption_rate_raw * coef * self.material.Thickness / 2
 
-        window_length = max(3, 2 * round(len(desorption_rate) / self.M.ntp))
-        desorption_rate_smoothed = signal.savgol_filter(desorption_rate, window_length, 2)
+    def _smooth_data(self, desorption_rate):
+        """Apply Savitzky-Golay smoothing filter."""
+        window_length = max(3, 2 * round(len(desorption_rate) / self.material.ntp))
+        
+        # Ensure window_length is odd and not larger than data
+        if window_length % 2 == 0:
+            window_length += 1
+        window_length = min(window_length, len(desorption_rate))
+        
+        return signal.savgol_filter(desorption_rate, window_length, 2)
 
-        #Model temperature range (ntp points evenly spaced from Tmin K to Tmax K, not including Tmax) 
-        temperature_model = np.linspace(self.M.TMin, self.M.TMax, self.M.ntp+1)
+    def _downsample_data(self, desorption_rate_smoothed):
+        """Downsample data to model temperature grid using interpolation"""
+        # Create model temperature grid (ntp points from TMin to TMax, excluding TMax)
+        temperature_model = np.linspace(
+            self.material.TMin, 
+            self.material.TMax, 
+            self.material.ntp + 1
+        )
 
-        # Experimental data
-        temperature_raw = np.array(self.temperature_raw)  # Experimental temperatures (not evenly spaced)
-        desorption_rate_smoothed = np.array(desorption_rate_smoothed)     # Corresponding fluxes at T_exp
+        # Create interpolation function
+        interp_function = interp1d(
+            self.temperature_raw, 
+            desorption_rate_smoothed, 
+            kind='cubic', 
+            bounds_error=False, 
+            fill_value=(desorption_rate_smoothed[0], self.hp.flux_threshold)
+        )
 
-        # Create an interpolation function based on experimental data
-        interp_function = interp1d(temperature_raw, desorption_rate_smoothed, kind='cubic', bounds_error=False, fill_value=(desorption_rate_smoothed[0], self.hp.flux_threshold))
-
-        # Interpolate flux values at the model's temperature points 
+        # Interpolate to model grid
         desorption_rate_downsampled = interp_function(temperature_model)
-        desorption_rate_downsampled[(temperature_model > np.max(temperature_raw))] = self.hp.flux_threshold
+        
+        # Set extrapolated values to threshold
+        beyond_range = temperature_model > np.max(self.temperature_raw)
+        desorption_rate_downsampled[beyond_range] = self.hp.flux_threshold
 
-        # Remove datapoint corresponding to Tmax
-        temperature_model = temperature_model[:-1]
-        desorption_rate_downsampled = desorption_rate_downsampled[:-1]
+        # Remove last point (TMax) and store results
+        self.Temperature = temperature_model[:-1]
+        self.Flux = desorption_rate_downsampled[:-1]
 
-        desorption_rate = desorption_rate_downsampled[:]
-        temperature = temperature_model[:]
+    def get_raw_data(self):
+        """Get original unprocessed data"""
+        return self.temperature_raw, self.desorption_rate_raw
 
-        # Model inputs
-        self.Temperature = temperature
-        self.Flux = desorption_rate
-        TDS_Curve = desorption_rate
-        self.TDS_Curve = [tf.convert_to_tensor(TDS_Curve)]
+    def get_processed_data(self):
+        """Get processed data ready for modeling"""
+        return self.Temperature, self.Flux
+
+    def plot_comparison(self):
+        """Plot raw vs processed data for visualization"""
+        try:
+            import matplotlib.pyplot as plt
+            
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+            
+            # Raw data
+            ax1.plot(self.temperature_raw, self.desorption_rate_raw, 'b-', alpha=0.7)
+            ax1.set_xlabel('Temperature (K)')
+            ax1.set_ylabel('Raw Desorption Rate (wppm/s)')
+            ax1.set_title('Raw Data')
+            ax1.grid(True, alpha=0.3)
+            
+            # Processed data
+            ax2.plot(self.Temperature, self.Flux, 'r-', linewidth=2)
+            ax2.set_xlabel('Temperature (K)')
+            ax2.set_ylabel('Processed Flux (mol/m^3/s)')
+            ax2.set_title('Processed Data')
+            ax2.grid(True, alpha=0.3)
+            
+            plt.tight_layout()
+            plt.show()
+            
+        except ImportError:
+            print("Matplotlib not available for plotting")
