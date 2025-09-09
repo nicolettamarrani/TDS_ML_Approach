@@ -72,7 +72,7 @@ def run_thermal_desorption_analysis(params, result_queue):
             result_queue.put({'status': 'stopped'})
             return
         
-        # Step 3: Create and train the Model Ensemble (this is the longest step)
+        # Step 3: Create and train the Model Ensemble
         result_queue.put({'status': 'progress', 'progress': 20, 'message': "Generating data and training models... (this may take several hours)"})
         
         if stop_flag and stop_flag.is_set():
@@ -236,16 +236,15 @@ class MainGUI:
             style.configure("TButton", background="white")
             
             style.configure("TProgressbar", 
-                       background="green",      # Progress bar color (green)
-                       troughcolor="white",     # Background color (white)
-                       bordercolor="gray",      # Border color
-                       lightcolor="white",      # Light edge color
-                       darkcolor="gray")        # Dark edge color
+                       background="green",
+                       troughcolor="white",
+                       bordercolor="gray",
+                       lightcolor="white",
+                       darkcolor="gray")
         
             
         except Exception as e:
             print(f"Warning: Could not configure styles: {e}")
-            # Continue without custom styling
         
     def create_layout(self):
         """Create the main GUI layout"""
@@ -350,11 +349,9 @@ class MainGUI:
 
         tk.Label(trap_frame, text="Model Type:", bg='white').grid(row=0, column=0, sticky=tk.W, pady=2)
         
-        # Use ttk.Combobox but with error handling
         try:
             self.trap_model = ttk.Combobox(trap_frame, values=["McNabb-Foster", "Oriani"], width=12, state="readonly")
         except:
-            # Fallback to a simple approach if ttk fails
             self.trap_model = tk.StringVar()
             self.trap_model.set("McNabb-Foster")
             combo_frame = tk.Frame(trap_frame, bg='white')
@@ -629,7 +626,7 @@ class MainGUI:
         except queue.Empty:
             pass
     
-        # THIS LINE IS CRITICAL - it keeps the checking loop running:
+        # Keep the checking loop running:
         self.root.after(100, self.check_thread_results)
 
     def handle_success(self, result):
@@ -642,7 +639,7 @@ class MainGUI:
         self.run_button.config(state=tk.NORMAL)
         self.stop_button.config(state=tk.DISABLED)
 
-        # Generate plots in main thread (safe for matplotlib)
+        # Generate plots in main thread
         try:
             self.generate_saved_plots(result)
             self.update_plot_with_contributions(
@@ -1029,7 +1026,7 @@ class MainGUI:
             try:
                 widget.delete(0, tk.END)
             except:
-                pass  # Skip if widget doesn't support this operation
+                pass
 
         # Reset button states properly
         self.run_button.config(state=tk.NORMAL)
@@ -1090,7 +1087,7 @@ class MainGUI:
                 widget = getattr(self, attr)
                 widget.insert(0, value)
             except:
-                pass  # Skip if attribute doesn't exist or operation fails
+                pass
         
         # Set trap model safely
         try:
