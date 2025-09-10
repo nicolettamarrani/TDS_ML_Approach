@@ -32,9 +32,9 @@ class ExpDataProcessing:
         self.desorption_rate_raw = data.iloc[:, 1].to_numpy()
 
     def _process_data(self):
-        """Apply corrections, smooth, and downsample the data"""
-        # Apply material-specific corrections
-        corrected_rate = self._apply_material_corrections()
+        """Convert units, smooth, and downsample the data"""
+        # Unit conversion
+        corrected_rate = self._apply_unit_conversion()
         
         # Smooth the data
         smoothed_rate = self._smooth_data(corrected_rate)
@@ -45,8 +45,8 @@ class ExpDataProcessing:
         # Create TensorFlow tensor
         self.TDS_Curve = [tf.convert_to_tensor(self.Flux)]
 
-    def _apply_material_corrections(self):
-        """Apply density and thickness corrections to desorption rate"""
+    def _apply_unit_conversion(self):
+        """Apply unit conversion to desorption rate"""
         coef = self.material.mass_density / 1.01
         return self.desorption_rate_raw * coef * self.material.Thickness / 2
 
