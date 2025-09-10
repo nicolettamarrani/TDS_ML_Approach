@@ -24,3 +24,5 @@ All inputs and files required to analyse the experimental data from Novak et al.
 Model hyperparameters are defined as specified in the manuscript.
 
 Full documentation is available [here](Documentation/TDS_ML_Code_Documentation.pdf). 
+
+A GUI is also provided (**GUI.py**). A user guide is available [here](Documentation/TDS_ML_GUI_Documentation.pdf). 
