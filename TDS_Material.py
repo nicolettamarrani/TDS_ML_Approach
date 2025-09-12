@@ -152,14 +152,14 @@ class TDS_Material:
             self.High_Density_Trap = False
             self.HDT_NRange = None
             self.HDT_ERange = None
-            HD_Trap_param_New = {
+            HD_Trap_param = {
                 'HDT': False,
                 'HDT_NRange': None,
                 'HDT_ERange': None,
             }
 
         # Register the experiment with ExpDataParameters
-        ExpDataParameters.register_experiment(ExpName, material_param, test_param, numerical_param, HD_Trap_param_New)
+        ExpDataParameters.register_experiment(ExpName, material_param, test_param, numerical_param, HD_Trap_param)
 
         # Material properties
         self.NL = material_param['NL']
