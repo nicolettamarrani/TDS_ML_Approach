@@ -120,7 +120,7 @@ class TDS_Material:
         self.ExpName = ExpName
 
         # Try to get parameters from ExpDataParameters if not provided
-        if material_param is None or test_param is None or numerical_param is None or HD_Trap_param is None:
+        if material_param is None or test_param is None or numerical_param is None:
             # First check if experiment is already registered
             exp_material, exp_test, exp_numerical, exp_HD_Trap = ExpDataParameters.get_experiment(ExpName)
             
@@ -143,9 +143,6 @@ class TDS_Material:
             numerical_param = numerical_param if numerical_param is not None else exp_numerical
             HD_Trap_param = HD_Trap_param if HD_Trap_param is not None else exp_HD_Trap
 
-        # Register the experiment with ExpDataParameters
-        ExpDataParameters.register_experiment(ExpName, material_param, test_param, numerical_param, HD_Trap_param)
-
         # High-density, low-energy trap parameters
         if HD_Trap_param:
             self.High_Density_Trap = HD_Trap_param['HDT']
@@ -155,6 +152,14 @@ class TDS_Material:
             self.High_Density_Trap = False
             self.HDT_NRange = None
             self.HDT_ERange = None
+            HD_Trap_param_New = {
+                'HDT': False,
+                'HDT_NRange': None,
+                'HDT_ERange': None,
+            }
+
+        # Register the experiment with ExpDataParameters
+        ExpDataParameters.register_experiment(ExpName, material_param, test_param, numerical_param, HD_Trap_param_New)
 
         # Material properties
         self.NL = material_param['NL']
