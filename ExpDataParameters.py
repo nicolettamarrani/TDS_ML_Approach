@@ -219,7 +219,7 @@ class ExpDataParameters:
         if ExpName in cls._experiments:
             exp_data = cls._experiments[ExpName]
             return exp_data['material'], exp_data['test'], exp_data['numerical'], exp_data['HD_Trap']
-        return None, None, None
+        return None, None, None, None
     
     @classmethod
     def list_experiments(cls):
